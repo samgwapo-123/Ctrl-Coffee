@@ -1,0 +1,56 @@
+@page "/cafe"
+@inject CartService Cart
+@inject BookingService Booking
+
+<PageTitle>Café – Byte &amp; Brew</PageTitle>
+
+<section class="rounded-3xl bg-ink text-cream p-8 sm:p-10">
+    <p class="font-mono text-xs tracking-widest text-mint">— THE CAFÉ</p>
+    <h1 class="mt-2 text-4xl font-bold">Coffee &amp; bites <span class="font-serif italic text-mint">while you wait</span></h1>
+    <p class="mt-2 text-cream/70 max-w-xl">Freshly made drinks and pastries, ready when your gadget is.</p>
+</section>
+
+@if (Booking.Latest is { } b)
+{
+    <div class="mt-6 rounded-2xl bg-mint/20 border border-mint p-4 text-sm">
+        🔧 Your repair <b>@b.Reference</b> is booked for <b>@b.Date.ToString("MMM d")</b> at <b>@b.TimeSlot</b>.
+        Order a drink now and we'll have it ready for you.
+    </div>
+}
+
+<div class="mt-6 flex flex-wrap gap-2">
+    @foreach (var c in categories)
+    {
+        <button @onclick="() => selected = c"
+                class="px-4 py-1.5 rounded-full border border-forest text-sm font-medium @(selected == c ? "bg-forest text-cream" : "bg-white hover:bg-forest/10")">
+            @c
+        </button>
+    }
+</div>
+
+@if (lastAdded is not null)
+{
+    <p class="mt-4 text-sm font-semibold text-copper">@lastAdded</p>
+}
+
+<div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    @foreach (var p in Items)
+    {
+        <ProductCard Item="p" OnAdd="AddToCart" />
+    }
+</div>
+
+@code {
+    private readonly string[] categories = { "All", "Drinks", "Pastries" };
+    private string selected = "All";
+    private string? lastAdded;
+
+    private IEnumerable<Product> Items => ProductData.All.Where(p =>
+        p.Category != "Gadgets" && (selected == "All" || p.Category == selected));
+
+    private void AddToCart(Product p)
+    {
+        Cart.Add(p);
+        lastAdded = $"✓ {p.Name} added to cart";
+    }
+}
