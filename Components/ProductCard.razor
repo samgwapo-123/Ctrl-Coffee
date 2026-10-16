@@ -1,0 +1,22 @@
+<div class="bg-white rounded-2xl border border-forest/10 shadow-sm hover:shadow-lg transition p-4 flex flex-col text-center">
+    <div class="relative aspect-square rounded-xl bg-cream flex items-center justify-center text-6xl overflow-hidden">
+        @Item.Emoji
+        <img src="@Item.ImagePath" alt="@Item.Name" onerror="this.style.display='none'"
+             class="absolute inset-0 h-full w-full object-contain bg-cream p-3" />
+    </div>
+    <p class="mt-4 text-xs text-forest/50">@Item.Category</p>
+    <h3 class="mt-1 font-semibold">@Item.Name</h3>
+    <p class="text-xl font-medium">@Item.PriceText</p>
+    <p class="mt-1 text-xs text-forest/60 flex-1">@Item.Description</p>
+    <div class="mt-4 flex items-center justify-between text-sm">
+        <button @onclick="() => OnAdd.InvokeAsync(Item)" class="font-medium hover:text-copper">@Item.ActionLabel →</button>
+        <button @onclick="() => liked = !liked" class="text-lg hover:text-copper" aria-label="Favorite">@(liked ? "♥" : "♡")</button>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public Product Item { get; set; } = default!;
+    [Parameter] public EventCallback<Product> OnAdd { get; set; }
+
+    private bool liked;
+}

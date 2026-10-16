@@ -1,0 +1,128 @@
+﻿@page "/"
+@inject CartService Cart
+
+<PageTitle>Byte &amp; Brew</PageTitle>
+
+<section class="grid gap-10 lg:grid-cols-2 items-center py-6">
+    <div>
+        <h1 class="text-6xl sm:text-8xl font-black tracking-tight bg-gradient-to-r from-[#a85d4a] to-ink bg-clip-text text-transparent">
+            BYTE &amp; BREW
+        </h1>
+        <h2 class="mt-4 text-3xl font-bold">A tech café &amp; gadget repair studio</h2>
+        <p class="mt-3 text-sm max-w-md text-ink/70">
+            Book your repair, order a coffee while you wait, and pick up a new gadget on your way out. Everything in one cart.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+            <a href="/repair" class="rounded-full bg-ink text-cream px-6 py-3 text-sm font-medium hover:bg-copper transition">Book a repair →</a>
+            <a href="/cafe" class="rounded-full border border-forest/20 bg-white px-6 py-3 text-sm font-medium hover:bg-forest/10">Order coffee</a>
+        </div>
+        <div class="mt-10 flex gap-6">
+            @foreach (var s in stats)
+            {
+                <div class="border-l border-forest/20 pl-4 first:border-0 first:pl-0">
+                    <p class="text-xs text-ink/60">@s.Label</p>
+                    <p class="text-2xl font-bold">@s.Value</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="relative h-80 sm:h-[26rem] rounded-3xl bg-gradient-to-br from-white to-mint/40 flex items-center justify-center text-9xl overflow-hidden">
+        ☕
+        <img src="images/hero.png" alt="Byte &amp; Brew" onerror="this.style.display='none'"
+             class="absolute inset-0 h-full w-full object-contain p-6" />
+    </div>
+</section>
+
+<div class="overflow-hidden py-8">
+    <div class="-rotate-2 bg-ink text-cream py-3 w-[110%] -ml-[5%] overflow-hidden whitespace-nowrap">
+        <div class="inline-flex animate-marquee tracking-[0.4em] text-sm uppercase">
+            @for (var i = 0; i < 2; i++)
+            {
+                @foreach (var w in ribbon)
+                {
+                    <span class="pr-16">@w</span>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<h2 class="mt-6 text-3xl font-bold text-center">Explore the recent products</h2>
+<p class="text-center text-sm text-ink/60 mt-2 max-w-lg mx-auto">
+    Fresh drinks from the café and the best picks from our gadget shelf.
+</p>
+<div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    @foreach (var p in Featured)
+    {
+        <ProductCard Item="p" OnAdd="AddToCart" />
+    }
+</div>
+@if (lastAdded is not null)
+{
+    <p class="mt-4 text-center text-sm font-semibold text-copper">@lastAdded</p>
+}
+
+<section class="mt-14 rounded-3xl bg-gradient-to-r from-mint/40 to-white p-8 sm:p-10 flex flex-wrap items-center justify-between gap-6">
+    <div>
+        <h2 class="text-3xl font-bold">Check out our<br />best gadgets</h2>
+        <a href="/gadgets" class="mt-5 inline-block rounded-full bg-ink text-cream px-6 py-2.5 text-sm font-medium hover:bg-copper transition">Explore gadgets →</a>
+    </div>
+    <div class="relative h-40 w-56 flex items-center justify-center text-8xl">
+        🎧
+        <img src="images/banner.png" alt="Gadgets" onerror="this.style.display='none'"
+             class="absolute inset-0 h-full w-full object-contain" />
+    </div>
+</section>
+
+<h2 class="mt-14 text-2xl font-bold">We care about the quality of our service</h2>
+<div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    @foreach (var f in features)
+    {
+        <div class="bg-white rounded-2xl shadow-sm p-5">
+            <div class="text-3xl">@f.Emoji</div>
+            <h3 class="mt-3 font-semibold">@f.Title</h3>
+            <p class="mt-1 text-xs text-ink/60">@f.Text</p>
+        </div>
+    }
+</div>
+
+<section class="mt-14 rounded-3xl bg-ink text-cream p-8 sm:p-10 flex flex-wrap items-center justify-between gap-6">
+    <div>
+        <h2 class="text-2xl sm:text-3xl font-bold">Waiting on a repair?</h2>
+        <p class="mt-1 text-cream/70">Book a slot, then order a drink. We'll have it ready for your appointment.</p>
+    </div>
+    <a href="/repair" class="rounded-full bg-mint text-ink px-6 py-3 text-sm font-semibold hover:opacity-90">Book a repair →</a>
+</section>
+
+@code {
+    private record Stat(string Label, string Value);
+    private record Feature(string Emoji, string Title, string Text);
+
+    private readonly List<Stat> stats = new()
+    {
+        new("Products", "16+"), new("Repair services", "6"), new("Customer rating", "4.9★")
+    };
+
+    private readonly string[] ribbon = { "Byte & Brew", "Coffee", "Repair", "Gadgets" };
+
+    private readonly List<Feature> features = new()
+    {
+        new("☕", "Fresh daily", "Drinks and pastries made throughout the day."),
+        new("🔧", "Skilled repairs", "Honest estimates before we start."),
+        new("🔌", "Genuine parts", "Quality parts and accessories only."),
+        new("⏱️", "Quick turnaround", "Most repairs done while you sip.")
+    };
+
+    private string? lastAdded;
+
+    private IEnumerable<Product> Featured =>
+        ProductData.All.Where(p => p.Category == "Drinks").Take(2)
+            .Concat(ProductData.All.Where(p => p.Category == "Gadgets").Take(2));
+
+    private void AddToCart(Product p)
+    {
+        Cart.Add(p);
+        lastAdded = $"✓ {p.Name} added to cart";
+    }
+}

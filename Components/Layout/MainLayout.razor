@@ -1,0 +1,46 @@
+﻿@inherits LayoutComponentBase
+@implements IDisposable
+@inject CartService Cart
+
+<div class="min-h-screen flex flex-col bg-cream text-ink">
+    <header class="max-w-6xl w-full mx-auto px-4 pt-6">
+        <div class="bg-white rounded-2xl shadow-sm px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+            <a href="/" class="flex items-center gap-2 font-bold">
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ink text-sm">☕</span>
+                Byte &amp; Brew
+            </a>
+            <nav class="flex flex-wrap items-center gap-5 text-sm">
+                <NavLink href="" Match="NavLinkMatch.All" ActiveClass="text-copper font-semibold" class="hover:text-copper">Home</NavLink>
+                <NavLink href="/cafe" ActiveClass="text-copper font-semibold" class="hover:text-copper">Café</NavLink>
+                <NavLink href="/gadgets" ActiveClass="text-copper font-semibold" class="hover:text-copper">Gadgets</NavLink>
+                <NavLink href="/repair" ActiveClass="text-copper font-semibold" class="hover:text-copper">Repair</NavLink>
+            </nav>
+            <div class="flex items-center gap-2">
+                <a href="/cart" class="rounded-full border border-forest/20 px-4 py-2 text-sm hover:bg-forest/10">🛒 @Cart.Count</a>
+                <a href="/repair" class="rounded-full bg-forest text-cream px-5 py-2 text-sm font-medium hover:bg-copper transition">Book a repair</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-6xl mx-auto px-4 py-8">
+        @Body
+    </main>
+
+    <footer class="bg-ink text-cream/70 text-center text-sm py-6">
+        © 2026 Byte &amp; Brew · Good Coffee. Better Connections.
+    </footer>
+</div>
+
+<div id="blazor-error-ui" class="hidden fixed bottom-0 inset-x-0 bg-yellow-200 text-black p-3">
+    An unhandled error has occurred.
+    <a href="" class="underline">Reload</a>
+    <span class="dismiss cursor-pointer float-right">🗙</span>
+</div>
+
+@code {
+    protected override void OnInitialized() => Cart.OnChange += HandleCartChange;
+
+    private void HandleCartChange() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Cart.OnChange -= HandleCartChange;
+}
