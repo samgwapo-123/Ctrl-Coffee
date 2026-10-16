@@ -1,0 +1,143 @@
+@page "/repair"
+@inject BookingService Booking
+
+<PageTitle>Book a Repair – Byte &amp; Brew</PageTitle>
+
+<section class="rounded-3xl bg-ink text-cream p-8 sm:p-10">
+    <p class="font-mono text-xs tracking-widest text-mint">— GADGET LAB</p>
+    <h1 class="mt-2 text-4xl font-bold">Book a <span class="font-serif italic text-mint">repair</span></h1>
+    <p class="mt-2 text-cream/70 max-w-xl">Pick a service, choose a date and time, then enjoy a coffee while we fix your gadget.</p>
+</section>
+
+@if (confirmed is not null)
+{
+    var svc = RepairData.All.FirstOrDefault(s => s.Name == confirmed.Service);
+    <div class="mt-8 bg-white rounded-2xl shadow p-8 text-center">
+        <div class="text-6xl">✅</div>
+        <h2 class="mt-3 text-2xl font-bold">You're booked, @confirmed.Name!</h2>
+        <p class="mt-1 text-forest/70">Reference <b>@confirmed.Reference</b></p>
+        <div class="mt-4 inline-block text-left bg-cream rounded-xl p-4 text-sm space-y-1">
+            <p><b>Device:</b> @confirmed.Device</p>
+            <p><b>Service:</b> @confirmed.Service (est. @svc?.PriceText)</p>
+            <p><b>When:</b> @confirmed.Date.ToString("dddd, MMM d") at @confirmed.TimeSlot</p>
+        </div>
+        <p class="mt-4">Waiting around? Order a coffee and we'll have it ready. ☕</p>
+        <div class="mt-4 flex flex-wrap justify-center gap-3">
+            <a href="/cafe" class="bg-copper text-white px-6 py-2 rounded-full font-semibold hover:opacity-90">Order a coffee</a>
+            <button @onclick="Reset" class="border border-forest px-6 py-2 rounded-full font-semibold hover:bg-forest/10">Book another</button>
+        </div>
+    </div>
+}
+else
+{
+    <EditForm Model="model" OnValidSubmit="Submit" class="mt-8 grid gap-8 lg:grid-cols-5">
+        <DataAnnotationsValidator />
+
+        <div class="lg:col-span-2">
+            <h2 class="text-xl font-bold">1. Choose a service</h2>
+            <div class="mt-4 space-y-3">
+                @foreach (var s in RepairData.All)
+                {
+                    <button type="button" @onclick="() => model.Service = s.Name"
+                            class="w-full flex items-center gap-3 rounded-xl border p-3 text-left transition @(model.Service == s.Name ? "border-forest bg-forest text-cream" : "border-forest/20 bg-white hover:border-forest")">
+                        <span class="text-3xl">@s.Emoji</span>
+                        <span class="flex-1">
+                            <span class="block font-semibold">@s.Name</span>
+                            <span class="block text-xs opacity-70">About @s.EstimatedMinutes min</span>
+                        </span>
+                        <span class="font-bold">@s.PriceText</span>
+                    </button>
+                }
+            </div>
+            <ValidationMessage For="() => model.Service" class="text-sm text-red-600" />
+        </div>
+
+        <div class="lg:col-span-3 bg-white rounded-2xl shadow p-6 space-y-4">
+            <h2 class="text-xl font-bold">2. Your details</h2>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                    <label class="block text-sm font-medium">Name</label>
+                    <InputText @bind-Value="model.Name" class="@field" />
+                    <ValidationMessage For="() => model.Name" class="text-sm text-red-600" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Contact number</label>
+                    <InputText @bind-Value="model.Contact" class="@field" />
+                    <ValidationMessage For="() => model.Contact" class="text-sm text-red-600" />
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium">Device</label>
+                <InputSelect @bind-Value="model.Device" class="@field">
+                    <option value="">Choose a device...</option>
+                    @foreach (var d in devices)
+                    {
+                        <option value="@d">@d</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => model.Device" class="text-sm text-red-600" />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium">What's wrong?</label>
+                <InputTextArea @bind-Value="model.Issue" rows="3" class="@field" />
+                <ValidationMessage For="() => model.Issue" class="text-sm text-red-600" />
+            </div>
+
+            <h2 class="text-xl font-bold pt-2">3. Date and time</h2>
+            <div>
+                <InputDate @bind-Value="model.Date" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="@field" />
+                <ValidationMessage For="() => model.Date" class="text-sm text-red-600" />
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+                @foreach (var slot in BookingService.Slots)
+                {
+                    var taken = Booking.IsTaken(model.Date, slot);
+                    <button type="button" disabled="@taken" @onclick="() => model.TimeSlot = slot"
+                            class="px-4 py-1.5 rounded-full border border-forest text-sm @(taken ? "opacity-40 line-through cursor-not-allowed" : model.TimeSlot == slot ? "bg-forest text-cream" : "bg-white hover:bg-forest/10")">
+                        @slot
+                    </button>
+                }
+            </div>
+            <ValidationMessage For="() => model.TimeSlot" class="text-sm text-red-600" />
+            @if (slotError is not null)
+            {
+                <p class="text-sm text-red-600">@slotError</p>
+            }
+
+            <button type="submit" class="w-full bg-forest text-cream py-3 rounded-full font-semibold hover:bg-copper transition">
+                Confirm booking
+            </button>
+        </div>
+    </EditForm>
+}
+
+@code {
+    private const string field = "w-full border border-forest/40 rounded-lg px-3 py-2";
+    private readonly string[] devices = { "Phone", "Laptop", "Tablet", "Game console", "Smart watch", "Other" };
+
+    private RepairBooking model = new();
+    private RepairBooking? confirmed;
+    private string? slotError;
+
+    private void Submit()
+    {
+        if (Booking.IsTaken(model.Date, model.TimeSlot))
+        {
+            slotError = "Sorry, that time slot was just taken. Please choose another.";
+            model.TimeSlot = "";
+            return;
+        }
+        slotError = null;
+        confirmed = Booking.Add(model);
+    }
+
+    private void Reset()
+    {
+        confirmed = null;
+        model = new RepairBooking();
+    }
+}
