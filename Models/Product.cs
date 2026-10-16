@@ -21,7 +21,11 @@ public abstract class Product
     public abstract string Category { get; }
     public virtual string ActionLabel => "Add to cart";
     public string PriceText => $"₱{Price:N2}";
-    public string ImagePath => $"images/products/{Id}.png";
+
+    // Fix: IDs 1 and 2 use .png; IDs 3 to 16 use .jpg; both start with '/'
+    public string ImagePath => Id is 1 or 2 
+        ? $"/images/products/{Id}.png" 
+        : $"/images/products/{Id}.jpg";
 }
 
 public class Drink(int id, string name, decimal price, string emoji, string description)
