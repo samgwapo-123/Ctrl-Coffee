@@ -1,22 +1,47 @@
-<div class="bg-white rounded-2xl border border-forest/10 shadow-sm hover:shadow-lg transition p-4 flex flex-col text-center">
-    <div class="relative aspect-square rounded-xl bg-cream flex items-center justify-center text-6xl overflow-hidden">
-        @Item.Emoji
-        <img src="@Item.ImagePath" alt="@Item.Name" onerror="this.style.display='none'"
-             class="absolute inset-0 h-full w-full object-contain bg-cream p-3" />
+<div class="group flex h-full animate-fade-up flex-col overflow-hidden rounded-2xl border border-ink/10 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:border-copper/30 hover:shadow-xl hover:shadow-ink/10"
+     style="animation-delay:@(Delay)ms">
+    <div class="relative m-3 flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl bg-cream">
+        <span class="text-6xl" aria-hidden="true">@Item.Emoji</span>
+
+        <img src="@Item.ImagePath"
+             alt="@Item.Name"
+             onerror="this.style.display='none'"
+             class="absolute inset-0 h-full w-full bg-cream object-cover transition-transform duration-500 group-hover:scale-105" />
+
+        <span class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-forest shadow-sm">
+            @Item.Category
+        </span>
+
+        <button type="button"
+                @onclick="() => liked = !liked"
+                aria-label="@(liked ? "Remove from favorites" : "Add to favorites")"
+                aria-pressed="@(liked ? "true" : "false")"
+                class="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-xl shadow-sm transition hover:scale-110 hover:bg-white">
+            <span class="@(liked ? "text-copper" : "text-ink/60")">@(liked ? "♥" : "♡")</span>
+        </button>
     </div>
-    <p class="mt-4 text-xs text-forest/50">@Item.Category</p>
-    <h3 class="mt-1 font-semibold">@Item.Name</h3>
-    <p class="text-xl font-medium">@Item.PriceText</p>
-    <p class="mt-1 text-xs text-forest/60 flex-1">@Item.Description</p>
-    <div class="mt-4 flex items-center justify-between text-sm">
-        <button @onclick="() => OnAdd.InvokeAsync(Item)" class="font-medium hover:text-copper">@Item.ActionLabel →</button>
-        <button @onclick="() => liked = !liked" class="text-lg hover:text-copper" aria-label="Favorite">@(liked ? "♥" : "♡")</button>
+
+    <div class="flex flex-1 flex-col px-5 pb-5 pt-2">
+        <h3 class="text-lg font-bold leading-snug text-ink transition-colors group-hover:text-copper">@Item.Name</h3>
+        <p class="mt-1 text-xs leading-relaxed text-ink/60">@Item.Description</p>
+
+        <div class="mt-auto flex flex-wrap items-end justify-between gap-3 pt-5">
+            <p class="text-xl font-black tracking-tight text-ink">@Item.PriceText</p>
+
+            <button type="button"
+                    @onclick="() => OnAdd.InvokeAsync(Item)"
+                    class="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-xs font-bold text-cream transition hover:bg-copper active:scale-95 focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2">
+                <span aria-hidden="true">+</span>
+                <span>@Item.ActionLabel</span>
+            </button>
+        </div>
     </div>
 </div>
 
 @code {
     [Parameter, EditorRequired] public Product Item { get; set; } = default!;
     [Parameter] public EventCallback<Product> OnAdd { get; set; }
+    [Parameter] public int Delay { get; set; }
 
     private bool liked;
 }
