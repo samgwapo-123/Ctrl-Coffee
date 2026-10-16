@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@source "../Components";
+
+@theme {
+  --color-forest: #6b3a26;
+  --color-ink: #3a1c10;
+  --color-cream: #faf5ee;
+  --color-copper: #b4683f;
+  --color-mint: #e9b99a;
+
+  --animate-marquee: marquee 25s linear infinite;
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+}
