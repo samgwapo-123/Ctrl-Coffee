@@ -43,24 +43,13 @@
             </div>
         </div>
 
-        <div class="relative mx-auto flex w-full max-w-lg items-center justify-center">
-            <div class="absolute aspect-square w-[90%] rounded-full bg-white/40"></div>
-            <div class="absolute aspect-square w-[75%] rounded-full border border-copper/20"></div>
-
-            <div class="relative flex aspect-square w-full animate-float items-center justify-center">
-                <span class="text-[9rem] drop-shadow-xl sm:text-[12rem]" aria-hidden="true">☕</span>
-                <img src="images/hero.png"
-                     alt="Byte &amp; Brew café"
-                     onerror="this.style.display='none'"
-                     class="absolute inset-0 h-full w-full object-contain p-6" />
-            </div>
-
-            <div class="absolute bottom-4 left-0 rounded-2xl border border-ink/5 bg-white/90 px-4 py-3 shadow-lg backdrop-blur sm:bottom-10">
-                <p class="text-xs font-bold text-ink">Your neighborhood tech café</p>
-                <p class="mt-1 text-[10px] text-ink/55">Sip. Shop. Repair.</p>
-            </div>
+            <CircleImage Src="images/hero.png" Alt="Latte on a wooden table" Emoji="☕" MaxWidth="max-w-xl" Float="true">
+                <div class="absolute bottom-4 left-2 rounded-2xl border border-ink/5 bg-white/90 px-4 py-3 shadow-lg backdrop-blur sm:bottom-10 sm:-left-4">
+                    <p class="text-xs font-bold text-ink">Your neighborhood tech café</p>
+                    <p class="mt-1 text-[10px] text-ink/55">Sip. Shop. Repair.</p>
+                </div>
+            </CircleImage>
         </div>
-    </div>
 </section>
 
 <section class="py-10">

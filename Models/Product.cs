@@ -23,9 +23,9 @@ public abstract class Product
     public string PriceText => $"₱{Price:N2}";
 
     // Fix: IDs 1 and 2 use .png; IDs 3 to 16 use .jpg; both start with '/'
-    public string ImagePath => Id is 1 or 2 
-        ? $"/images/products/{Id}.png" 
-        : $"/images/products/{Id}.jpg";
+   public string ImagePath => Id == 1
+    ? $"/images/products/{Id}.png"
+    : $"/images/products/{Id}.jpg";
 }
 
 public class Drink(int id, string name, decimal price, string emoji, string description)

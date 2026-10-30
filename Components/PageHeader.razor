@@ -1,18 +1,22 @@
-<section class="animate-fade-up overflow-hidden rounded-3xl bg-[#eee0cf]">
-    <div class="grid items-center gap-6 px-6 py-10 sm:px-10 md:grid-cols-2">
+<section class="animate-fade-up overflow-hidden rounded-[2rem] bg-[#eee0cf]">
+    <div class="grid items-center gap-8 px-6 py-9 sm:px-10 sm:py-12 lg:grid-cols-[1.2fr_0.8fr] lg:px-14">
         <div>
             <p class="text-xs font-bold uppercase tracking-[0.25em] text-copper">@Label</p>
-            <h1 class="mt-3 text-4xl font-black tracking-tight text-ink sm:text-5xl">
-                @Title <span class="font-serif font-normal italic text-copper">@Accent</span>
+            <h1 class="mt-4 text-4xl font-black leading-tight tracking-tight text-ink sm:text-5xl">
+                @Title
+                <span class="block font-serif font-normal italic text-copper">@Accent</span>
             </h1>
-            <p class="mt-3 max-w-md text-sm leading-6 text-ink/70">@Text</p>
+            <p class="mt-4 max-w-lg text-sm leading-7 text-ink/70">@Text</p>
+
+            @if (!string.IsNullOrEmpty(ButtonText))
+            {
+                <a href="@ButtonHref" class="mt-7 inline-flex rounded-full bg-ink px-6 py-3.5 text-sm font-bold text-cream transition hover:bg-copper">
+                    @ButtonText →
+                </a>
+            }
         </div>
 
-        <div class="relative hidden h-48 items-center justify-center overflow-hidden rounded-2xl bg-white/50 text-7xl md:flex">
-            <span aria-hidden="true">@Emoji</span>
-            <img src="@Image" alt="" onerror="this.style.display='none'"
-                 class="absolute inset-0 h-full w-full object-cover" />
-        </div>
+        <CircleImage Src="@Image" Emoji="@Emoji" MaxWidth="max-w-xs lg:max-w-sm" />
     </div>
 </section>
 
@@ -23,4 +27,6 @@
     [Parameter] public string Text { get; set; } = "";
     [Parameter] public string Image { get; set; } = "";
     [Parameter] public string Emoji { get; set; } = "";
+    [Parameter] public string? ButtonText { get; set; }
+    [Parameter] public string ButtonHref { get; set; } = "#";
 }
